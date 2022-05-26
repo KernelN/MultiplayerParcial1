@@ -35,6 +35,9 @@ namespace Universal.SceneManaging
                 case Scenes.menu:
                     sceneName = "Menu";
                     break;
+                case Scenes.lobby:
+                    sceneName = "Lobby";
+                    break;
                 default:
                     break;
             }

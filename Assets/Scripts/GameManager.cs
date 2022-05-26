@@ -32,7 +32,7 @@ namespace MultiplayerGame
         {
             Time.timeScale = pause ? 0 : 1;
         }
-        public void LoadScene(Scenes sceneToLoad, int level)
+        public void LoadScene(Scenes sceneToLoad, int level = -1)
         {
             SetPause(false); //reset time in case game was paused
 
