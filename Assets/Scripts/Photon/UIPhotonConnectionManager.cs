@@ -19,12 +19,17 @@ namespace MultiplayerGame.Photon
                 manager = PhotonConnectionManager.Get();
             }
 
-            manager.Connecting += OnConnected;
+            manager.Connecting += OnConnecting;
 
             inputPanel.SetActive(true);
             connectingText.SetActive(false);
         }
 
+        //Methods
+        public void Connect()
+        {
+            manager.Connect();
+        }
 
         //Event Receivers
         void OnConnecting()

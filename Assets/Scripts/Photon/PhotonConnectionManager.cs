@@ -38,13 +38,10 @@ namespace MultiplayerGame.Photon
                     Destroy(this);
                 }
             }
-
-            //Connect to a random room on start
-            Connect();
         }
 
         //Methods
-        void Connect()
+        public void Connect()
         {
             //Connect to room if connected to server, else, connect to server
             if (PhotonNetwork.IsConnected)
@@ -69,14 +66,14 @@ namespace MultiplayerGame.Photon
             //If player couldn't connect and function was called, don't join room
             if (!isConnecting) return;
 
-            Debug.Log(gameObject + " Connected to Server");
+            Debug.Log(gameObject.name + " Connected to Server");
             //After connecting to server, try to join random room
             roomManager.JoinRandomRoom();
             isConnecting = false;
         }
         public override void OnDisconnected(DisconnectCause cause)
         {
-            Debug.LogWarningFormat(gameObject + " Disconnected, {0}", cause);
+            Debug.LogWarningFormat(gameObject.name + " disconnected, {0}", cause);
             isConnecting = true;
         }
     }

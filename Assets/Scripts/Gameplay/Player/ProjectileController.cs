@@ -38,7 +38,7 @@ namespace MultiplayerGame.Gameplay.Player
             if (lifeTimer > lifeTime)
             {
                 Destroyed?.Invoke();
-                Destroy(gameObject);
+                //Destroy(gameObject);
             }
             else
             {

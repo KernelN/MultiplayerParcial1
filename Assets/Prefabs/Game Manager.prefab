@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 43739211142894522}
   - component: {fileID: 4295253481854576331}
   - component: {fileID: 6645520315626216323}
+  - component: {fileID: 8222002935884276499}
+  - component: {fileID: 3040801784977264468}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -58,3 +60,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minLoadSeconds: 1
+--- !u!114 &8222002935884276499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43739211142894525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3d029096c8b3b24784e1817f800f365, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxPlayersPerRoom: 10
+  userNumber: 0
+--- !u!114 &3040801784977264468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43739211142894525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6868b4c81a83da24baeece25a1f03068, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomManager: {fileID: 8222002935884276499}
+  gameVersion: 1
+  isConnecting: 0
