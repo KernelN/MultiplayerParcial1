@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MultiplayerGame.Photon
 {
@@ -13,6 +14,8 @@ namespace MultiplayerGame.Photon
         [SerializeField] GameObject playerContainerPrefab;
         [SerializeField] RectTransform playersPanel;
         [SerializeField] RectTransform firstSpawn;
+        [SerializeField] Button playButton;
+        [SerializeField] Image playImage;
         [SerializeField] Color hostColor;
         [Header("Runtime Values")]
         [SerializeField] List<TextMeshProUGUI> containerList;
@@ -31,28 +34,57 @@ namespace MultiplayerGame.Photon
             containerList = new List<TextMeshProUGUI>();
             playerList = new List<Player>();
 
-            //Set how much space is available as total space needed
-            distanceBetweenPlayers = playersPanel.rect.height;
-            //Divide by players * sizeOfContainer (how much space will all players occupy)
-            distanceBetweenPlayers /= manager.publicMaxUsers * playerContainerPrefab.GetComponent<RectTransform>().rect.height; 
-            //Add extra
-            distanceBetweenPlayers *= 1.1f;
+            //Set distance between containers
+            GetContainerDistance();
+
+            //Modify Button so only Host can start Playing
+            SetButton();
 
             //Create list (as we are already in a room)
             CreatePlayerList();
         }
 
         //Methods
+        void SetButton()
+        {
+            if (PhotonNetwork.IsMasterClient) return;
+            playButton.enabled = false;
+            playImage.color = Color.gray;
+        }
+        void GetContainerDistance()
+        {
+            //Set how much space is available as total space needed
+            distanceBetweenPlayers = playersPanel.rect.height;
+            Debug.Log("Panel Y: " + playersPanel.rect.height);
+            //Divide by max players * sizeOfContainer (how much space will all players occupy)
+            float containerSize = playerContainerPrefab.GetComponent<RectTransform>().rect.height;
+            distanceBetweenPlayers /= manager.publicMaxUsers * containerSize;
+            Debug.Log("Container Y: " + containerSize);
+            //Add extra
+            distanceBetweenPlayers *= 1.1f;
+
+            //Set Spawner Pos
+            Vector2 pos = firstSpawn.anchoredPosition;
+            pos.y -= distanceBetweenPlayers + containerSize / 2;
+            firstSpawn.anchoredPosition = pos;
+
+            //Add container size to min distance
+            if (distanceBetweenPlayers < containerSize)
+            {
+                distanceBetweenPlayers += containerSize;
+            }
+        }
         void CreatePlayerEntry(Player player)
         {
             //Instantiate Container
             GameObject container = Instantiate(playerContainerPrefab, playersPanel);
 
             //Set Position
-            Vector2 pos = firstSpawn.rect.position;
+            RectTransform rect = container.GetComponent<RectTransform>();
+            Vector2 pos = firstSpawn.anchoredPosition;
             pos.y -= distanceBetweenPlayers * containerList.Count;
-            RectTransform rectTransform = container.GetComponent<RectTransform>();
-            rectTransform.rect.Set(pos.x, pos.y, rectTransform.rect.width, rectTransform.rect.);
+            rect.anchoredPosition = pos;
+            //rectTransform.rect.Set(pos.x, pos.y, rectTransform.rect.width, rectTransform.rect.height);
 
             //Set player name
             TextMeshProUGUI text = container.GetComponentInChildren<TextMeshProUGUI>();
@@ -99,6 +131,10 @@ namespace MultiplayerGame.Photon
             //Move player
             playerList.Remove(playerToMove); //remove from old position
             playerList.Insert(containerList.IndexOf(textToReplace), playerToMove); //add in new
+        }
+        public void StartGame()
+        {
+            manager.LoadLevel();
         }
 
         //Photon Events (all this ARE technically, TCP)

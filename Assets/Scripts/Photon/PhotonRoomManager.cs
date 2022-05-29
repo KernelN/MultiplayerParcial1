@@ -35,9 +35,14 @@ namespace MultiplayerGame.Photon
         void LoadGameRoom()
         {
             if (!PhotonNetwork.IsMasterClient) return;
-            Debug.LogError("Try to Load a level but not Host");
-            Debug.LogFormat(gameObject + "  Loading Game Room");
+            Debug.Log("Loading Room Lobby");
             PhotonNetwork.LoadLevel("Room");
+        }
+        public void LoadLevel()
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+            Debug.Log("Loading Game");
+            PhotonNetwork.LoadLevel("GameplayHost");
         }
 
         //Photon Events (all this ARE techincally, TCP)
