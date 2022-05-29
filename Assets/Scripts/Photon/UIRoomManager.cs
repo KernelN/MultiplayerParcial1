@@ -113,9 +113,21 @@ namespace MultiplayerGame.Photon
         }
         void RemovePlayerFromList(Player player)
         {
-            //Get old player Container
-            TextMeshProUGUI textToReplace = containerList[playerList.IndexOf(player)];
+            //Get Player to Remove Index
+            int playerIndex = playerList.IndexOf(player);
 
+            //Get old player Container
+            TextMeshProUGUI textToReplace = containerList[playerIndex];
+
+            //If Player is in last position, just remove
+            if (playerIndex == playerList.Count - 1)
+            {
+                containerList.Remove(textToReplace);
+                playerList.Remove(player);
+                Destroy(textToReplace.transform.parent.gameObject);
+                return;
+            }
+            
             //Get Last player in list Container
             TextMeshProUGUI textToRemove = containerList[containerList.Count - 1];
             Player playerToMove = playerList[containerList.IndexOf(textToRemove)];
@@ -126,11 +138,22 @@ namespace MultiplayerGame.Photon
 
             //Remove old values
             containerList.Remove(textToRemove);
+            Destroy(textToRemove.transform.parent.gameObject); //remove Container, not only text
             playerList.Remove(player);
 
             //Move player
             playerList.Remove(playerToMove); //remove from old position
-            playerList.Insert(containerList.IndexOf(textToReplace), playerToMove); //add in new
+            int textToReplaceIndex = containerList.IndexOf(textToReplace);
+            playerList.Insert(textToReplaceIndex, playerToMove); //add in new
+        }
+        void UpdateHostNick()
+        {
+            foreach (var player in playerList)
+            {
+                if (!player.IsMasterClient) continue;
+                int hostIndex = playerList.IndexOf(player);
+                containerList[hostIndex].color = hostColor;
+            }
         }
         public void StartGame()
         {
@@ -144,7 +167,14 @@ namespace MultiplayerGame.Photon
         }
         public override void OnPlayerLeftRoom(Player other)
         {
+            bool quitterWasHost = other.IsMasterClient;
+
+            //Remove Player from the list (UI)
             RemovePlayerFromList(other);
+
+            ////If player who left was the host, update color of new host
+            //if (!quitterWasHost) return;
+            UpdateHostNick();
         }
     }
 }
