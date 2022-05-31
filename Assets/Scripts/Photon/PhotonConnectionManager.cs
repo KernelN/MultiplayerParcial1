@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MultiplayerGame.Photon
 {
-    public class PhotonConnectionManager : Singletons.PunSingletonInScene<PhotonConnectionManager>
+    public class PhotonConnectionManager : Singletons.PunSingleton<PhotonConnectionManager>
     {
         [Header("Set Values")]
         [SerializeField] PhotonRoomManager roomManager;
@@ -68,7 +68,7 @@ namespace MultiplayerGame.Photon
 
             Debug.Log(gameObject.name + " Connected to Server");
             //After connecting to server, try to join random room
-            roomManager.JoinRandomRoom();
+            Connect();
             isConnecting = false;
         }
         public override void OnDisconnected(DisconnectCause cause)

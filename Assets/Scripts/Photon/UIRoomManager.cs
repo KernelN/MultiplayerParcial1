@@ -25,23 +25,10 @@ namespace MultiplayerGame.Photon
         //Unity Events
         private void Start()
         {
-            if (!manager)
-            {
-                manager = PhotonRoomManager.Get();
-            }
+            manager = PhotonRoomManager.Get();
 
-            //Initialize List
-            containerList = new List<TextMeshProUGUI>();
-            playerList = new List<Player>();
-
-            //Set distance between containers
-            GetContainerDistance();
-
-            //Modify Button so only Host can start Playing
-            SetButton();
-
-            //Create list (as we are already in a room)
-            CreatePlayerList();
+            manager.RoomJoined += OnRoomJoined;
+            Debug.Log("Linked");
         }
 
         //Methods
@@ -55,11 +42,13 @@ namespace MultiplayerGame.Photon
         {
             //Set how much space is available as total space needed
             distanceBetweenPlayers = playersPanel.rect.height;
-            Debug.Log("Panel Y: " + playersPanel.rect.height);
+            //Debug.Log("Panel Y: " + playersPanel.rect.height);
+
             //Divide by max players * sizeOfContainer (how much space will all players occupy)
             float containerSize = playerContainerPrefab.GetComponent<RectTransform>().rect.height;
             distanceBetweenPlayers /= manager.publicMaxUsers * containerSize;
-            Debug.Log("Container Y: " + containerSize);
+            //Debug.Log("Container Y: " + containerSize);
+
             //Add extra
             distanceBetweenPlayers *= 1.1f;
 
@@ -160,7 +149,7 @@ namespace MultiplayerGame.Photon
             manager.LoadLevel();
         }
 
-        //Photon Events (all this ARE technically, TCP)
+        //Photon Events
         public override void OnPlayerEnteredRoom(Player other)
         {
             AddPlayerToList(other);
@@ -175,6 +164,25 @@ namespace MultiplayerGame.Photon
             ////If player who left was the host, update color of new host
             //if (!quitterWasHost) return;
             UpdateHostNick();
+        }
+
+        //Event Receivers
+        void OnRoomJoined()
+        {
+            Debug.Log("Initialized");
+            
+            //Initialize List
+            containerList = new List<TextMeshProUGUI>();
+            playerList = new List<Player>();
+
+            //Set distance between containers
+            GetContainerDistance();
+
+            //Modify Button so only Host can start Playing
+            SetButton();
+
+            //Create list (as we are already in a room)
+            CreatePlayerList();
         }
     }
 }

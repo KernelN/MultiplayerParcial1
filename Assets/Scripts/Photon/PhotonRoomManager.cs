@@ -5,13 +5,15 @@ using UnityEngine;
 
 namespace MultiplayerGame.Photon
 {
-    public class PhotonRoomManager : Singletons.PunSingletonInScene<PhotonRoomManager>
+    public class PhotonRoomManager : Singletons.PunSingleton<PhotonRoomManager>
     {
         [Header("Set Values")]
         [SerializeField] [Range(1, 20)] byte maxPlayersPerRoom = 4;
         [Header("Runtime Values")]
         [SerializeField] List<Player> users;
         [SerializeField] int userNumber;
+
+        public System.Action RoomJoined;
 
         public List<Player> publicUsers { get { return users; } }
         public int publicUserNumber { get { return userNumber; } }
@@ -35,7 +37,7 @@ namespace MultiplayerGame.Photon
         void LoadGameRoom()
         {
             if (!PhotonNetwork.IsMasterClient) return;
-            Debug.Log("Loading Room Lobby");
+            Debug.Log("Loading Lobby Room");
             PhotonNetwork.LoadLevel("Room");
         }
         public void LoadLevel()
@@ -55,13 +57,23 @@ namespace MultiplayerGame.Photon
         }
         public override void OnJoinedRoom()
         {
-            Debug.Log("You joined room");
+            //Get user number and Set nick if needed
             userNumber = PhotonNetwork.CurrentRoom.PlayerCount;
+            if (PhotonNetwork.NickName == "")
+            {
+                string nick = "#" + PhotonNetwork.LocalPlayer.ActorNumber;
+                PhotonNetwork.NickName = nick;
+                PhotonNetwork.LocalPlayer.NickName = nick;
+            }
+            Debug.Log("Nick " + PhotonNetwork.NickName);
+
             foreach (var player in PhotonNetwork.CurrentRoom.Players)
             {
                 users.Add(player.Value);
             }
             LoadGameRoom();
+            RoomJoined?.Invoke();
+            Debug.Log("Called");
         }
         public override void OnLeftRoom()
         {
@@ -73,6 +85,11 @@ namespace MultiplayerGame.Photon
             //Doesn't show if you're the player connecting
             Debug.Log(other.NickName + " connected");
             users.Add(other);
+            if (other.NickName == "")
+            {
+                string nick = "#" + other.ActorNumber;
+                other.NickName = nick;                
+            }
         }
         public override void OnPlayerLeftRoom(Player other)
         {
