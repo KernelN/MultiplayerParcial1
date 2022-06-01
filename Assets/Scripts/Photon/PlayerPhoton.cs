@@ -1,3 +1,4 @@
+using MultiplayerGame.Gameplay;
 using MultiplayerGame.Gameplay.Player;
 using Photon.Pun;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace MultiplayerGame.Photon
         [Header("Set Values")]
         [SerializeField] PhotonRoomManager roomManager;
         [SerializeField] PlayerController controller;
-        [SerializeField] GameObject mainCamera;
+        [SerializeField] CameraFollower mainCamera;
         [SerializeField] GameObject projectilePrefab;
         [SerializeField] Transform playersEmpty;
         [SerializeField] SpriteRenderer mesh;
@@ -63,6 +64,10 @@ namespace MultiplayerGame.Photon
                 inputs.player = controller;
             }
 
+            //Get Camera
+            mainCamera = Camera.main.gameObject.GetComponent<CameraFollower>();
+            mainCamera.playerController = transform;
+
             //Link Actions
             controller.ProjectileShot += OnProjectileShot;
 
@@ -71,9 +76,6 @@ namespace MultiplayerGame.Photon
             {
                 shootSpawnRadius = transform.lossyScale.x * 0.6f;
             }
-
-            //Set custom tag
-            gameObject.tag = gameObject.tag + " (Local)";
         }
 
         //Methods
