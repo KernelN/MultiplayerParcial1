@@ -24,7 +24,7 @@ namespace MultiplayerGame.Gameplay
         //Methods
 
         //Event Receivers
-        void OnGameOver(bool playersWon)
+        public void OnGameOver(bool playersWon)
         {
             loseScreen.SetActive(!playersWon);
             winScreen.SetActive(playersWon);

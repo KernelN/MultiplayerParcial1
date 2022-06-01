@@ -27,7 +27,15 @@ namespace MultiplayerGame.Photon
         {
             manager = PhotonRoomManager.Get();
 
-            manager.RoomJoined += OnRoomJoined;
+            //If we're host, call on Room Joined
+            if (PhotonNetwork.IsMasterClient)
+            {
+                OnRoomJoined();
+            }
+            else
+            {
+                manager.RoomJoined += OnRoomJoined;
+            }
             Debug.Log("Linked");
         }
 

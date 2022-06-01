@@ -1,49 +1,71 @@
+using MultiplayerGame.Photon.Singletons;
 using Photon.Pun;
 using UnityEngine;
 
 namespace MultiplayerGame.Photon
 {
-    public class GameplayManagerPhoton : MonoBehaviour
+    public class GameplayManagerPhoton : PunSingletonInScene<GameplayManagerPhoton>
     {
         [Header("Set Values")]
-        //[SerializeField] Gameplay.GameplayManager manager;
+        [SerializeField] Gameplay.GameplayManager manager;
         [SerializeField] PhotonRoomManager roomManager;
         [SerializeField] GameObject playerPrefab;
         [SerializeField] Transform spawnCenter;
         [SerializeField] Vector2 spawnRadius;
         [Header("Runtime Values")]
-        [SerializeField] int totalPlayers;
+        [SerializeField] int maxPlayers;
         [SerializeField] int playerNumber;
+        [SerializeField] bool victory;
+
+        public System.Action<bool> GameOver;
 
         //Unity Events
         private void Start()
         {
+            //Get Gameplay Manager
+            if (!manager)
+            {
+                manager = Gameplay.GameplayManager.Get();
+            }
+
             //Get Room Manager
             if (!roomManager)
             {
                 roomManager = PhotonRoomManager.Get();
             }
-            
+
             //Get player numbers (of room)
-            totalPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
-            playerNumber = roomManager.publicUserNumber;
+            maxPlayers = roomManager.publicMaxUsers;
+            playerNumber = PhotonNetwork.LocalPlayer.ActorNumber; //roomManager.publicUserNumber;
 
             //Create player
-            GameObject player = InstantiatePlayer();
-            SetColor(player.GetComponent<SpriteRenderer>());
-            player.name = PhotonNetwork.NickName;
+            InstantiatePlayer();
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                manager.GameOver += OnGameOver;
+            }
+            else
+            {
+                Destroy(manager);
+            }
         }
 
         //Methods
-        GameObject InstantiatePlayer()
+        void InstantiatePlayer()
         {
+            //Get Instance Values
             string prefab = playerPrefab.name;
-            return PhotonNetwork.Instantiate(prefab, GetPlayerPos(), transform.rotation);
+            Vector2 pos = GetPlayerPos();
+            Quaternion rot = transform.rotation;
+
+            //Instantiate (online)
+            GameObject player = PhotonNetwork.Instantiate(prefab, pos, rot);
         }
         Vector2 GetPlayerPos()
         {
             //Get how many players will be per row (row x column = players)
-            float playerPerRow = Mathf.Sqrt(totalPlayers);
+            float playerPerRow = Mathf.Sqrt(maxPlayers);
 
             //Calculate distances
             float xDistance = (spawnRadius.x) / playerPerRow;
@@ -54,7 +76,7 @@ namespace MultiplayerGame.Photon
             float yPos = transform.position.y - spawnRadius.y;
 
             //Move equally to player number
-            xPos += xDistance * roomManager.publicUserNumber;
+            xPos += xDistance * playerNumber;
 
             //Fix position until is in area
             while (xPos > spawnRadius.x)
@@ -65,38 +87,16 @@ namespace MultiplayerGame.Photon
 
             return new Vector2(xPos, yPos);
         }
-        void SetColor(SpriteRenderer renderer)
-        {
-            Color newColor = renderer.material.color;
-            float colorDistance = 1 / ((float)totalPlayers / 3);
-            float colorPool = colorDistance * playerNumber;
-            int currentColor = 1;
-            do
-            {
-                //Add Color to player
-                switch (currentColor)
-                {
-                    case 1:
-                        newColor.r += colorDistance;
-                    break;
-                    case 2:
-                        newColor.g += colorDistance;
-                        break;
-                    case 3:
-                        newColor.b += colorDistance;
-                        break;
-                    default:
-                        break;
-                }
 
-                //Decrease color pool
-                colorPool -= colorDistance;
-                
-                //Increase color index
-                currentColor++;
-                if (currentColor > 3) currentColor = 0;
-            } while (colorPool > 0);
-            renderer.material.color = newColor;
+        //Event Receivers
+        void OnGameOver(bool victory)
+        {
+            //Call Event
+            GameOver?.Invoke(victory);
+
+            //If player is host, send victory message to others
+            if (!PhotonNetwork.IsMasterClient) return;
+            photonView.RPC("OnGameOver", RpcTarget.Others, victory);
         }
     }
 }

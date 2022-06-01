@@ -7,16 +7,26 @@ namespace MultiplayerGame.Photon
     public class PlayerPhoton : MonoBehaviourPunCallbacks
     {
         [Header("Set Values")]
+        [SerializeField] PhotonRoomManager roomManager;
         [SerializeField] PlayerController controller;
         [SerializeField] GameObject mainCamera;
         [SerializeField] GameObject projectilePrefab;
         [SerializeField] Transform playersEmpty;
         [SerializeField] SpriteRenderer mesh;
         [SerializeField] float shootSpawnRadius;
+        [Header("Runtime Values")]
+        [SerializeField] int totalPlayers;
+        [SerializeField] int playerNumber;
 
         //Unity Events
         private void Start()
         {
+            //Get Room Manager
+            if (!roomManager)
+            {
+                roomManager = PhotonRoomManager.Get();
+            }
+
             //Get Controller
             if (!controller)
             {
@@ -29,34 +39,75 @@ namespace MultiplayerGame.Photon
                 playersEmpty = GameObject.FindGameObjectWithTag("Players").transform;
             }
             transform.parent = playersEmpty;
-            
+
+            //Get player numbers
+            totalPlayers = PhotonNetwork.CurrentRoom.PlayerCount;
+            playerNumber = photonView.OwnerActorNr;
+
+            //Set name and color
+            SetColor(GetComponent<SpriteRenderer>());
+            string nick = PhotonNetwork.CurrentRoom.GetPlayer(photonView.OwnerActorNr).NickName;
+            gameObject.name = nick;
+
             //If is host don't use the playable prefab
             if (!photonView.IsMine)
             {
                 Destroy(controller);
-                Destroy(mainCamera);
+                return;
             }
-            else
+
+            //Set Player Controls
+            InputManager inputs = InputManager.Get();
+            if (inputs)
             {
-                //Set Player Controls
-                InputManager inputs = InputManager.Get();
-                if (inputs)
-                {
-                    inputs.player = controller;
-                }
-
-                //Link Actions
-                controller.ProjectileShot += OnProjectileShot;
-
-                //If projectile would spawn inside player, increase radius
-                if (shootSpawnRadius < transform.lossyScale.x / 2)
-                {
-                    shootSpawnRadius = transform.lossyScale.x * 0.6f;
-                }                
+                inputs.player = controller;
             }
+
+            //Link Actions
+            controller.ProjectileShot += OnProjectileShot;
+
+            //If projectile would spawn inside player, increase radius
+            if (shootSpawnRadius < transform.lossyScale.x / 2)
+            {
+                shootSpawnRadius = transform.lossyScale.x * 0.6f;
+            }
+
+            //Set custom tag
+            gameObject.tag = gameObject.tag + " (Local)";
         }
 
         //Methods
+        void SetColor(SpriteRenderer renderer)
+        {
+            //If it's first or last player, set fast color and exit
+            if (playerNumber == totalPlayers)
+            {
+                renderer.material.color = Color.black;
+                return;
+            }
+            else if (playerNumber == 1)
+            {
+                renderer.material.color = Color.white;
+                return;
+            }
+
+            //Get Original Color
+            Color newColor = renderer.material.color;
+
+            //Get player position in total and assing value
+            float colorDistance = 1 / ((float)totalPlayers);
+            float colorPool = colorDistance * playerNumber;
+            float x = colorPool * Mathf.PI;
+
+            //Get color with value
+            newColor.r = Mathf.Sin(colorPool * 8);
+            newColor.g = Mathf.Cos(colorPool * 10 + 1.8f);
+            if (colorPool > 0.3f)
+                newColor.b = Mathf.Cos(colorPool * 10 - 0.5f);
+
+            //Update Color
+            renderer.material.color = newColor;
+        }
         void LaunchProjectile(Vector2 mousePos)
         {
             //Get Direction of shooting
