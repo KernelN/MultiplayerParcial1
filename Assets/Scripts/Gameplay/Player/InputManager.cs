@@ -13,11 +13,11 @@ namespace MultiplayerGame.Gameplay.Player
         {
             if (!context.started) return;
 
-            player.OnShootInput(context);
+            player?.OnShootInput(context);
         }
         public void OnMouseInput(InputAction.CallbackContext context)
         {
-            player.OnMouseInput(context);
+            player?.OnMouseInput(context);
         }
     }
 }

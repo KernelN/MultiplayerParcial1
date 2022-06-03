@@ -132,6 +132,7 @@ namespace MultiplayerGame.Photon
         //Event Recievers
         void OnProjectileShot(Vector2 mousePos)
         {
+            Debug.Log("Shoot with direction " + mousePos);
             LaunchProjectile(mousePos);
         }
     }
