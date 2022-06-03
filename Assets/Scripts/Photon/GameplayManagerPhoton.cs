@@ -52,6 +52,10 @@ namespace MultiplayerGame.Photon
         }
 
         //Methods
+        public void ExitRoom()
+        {
+            PhotonNetwork.LeaveRoom();
+        }
         void InstantiatePlayer()
         {
             //Get Instance Values

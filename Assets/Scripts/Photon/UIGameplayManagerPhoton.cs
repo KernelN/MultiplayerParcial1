@@ -11,6 +11,10 @@ namespace MultiplayerGame.Photon
         [SerializeField] UIGameplayManager offlineUI;
 
         //Unity Events
+        public void ExitRoom()
+        {
+            manager.ExitRoom();
+        }
         private void Start()
         {
             if (!manager)
