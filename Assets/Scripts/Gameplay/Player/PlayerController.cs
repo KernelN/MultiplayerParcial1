@@ -16,6 +16,10 @@ namespace MultiplayerGame.Gameplay.Player
         public int publicProjectiles {  get { return currentProjectiles; } }
 
         //Unity Events
+        private void Start()
+        {
+            mousePos = Vector2.zero;
+        }
         public void OnShootInput(InputAction.CallbackContext context)
         {
             if (!context.started) return;
@@ -26,9 +30,11 @@ namespace MultiplayerGame.Gameplay.Player
         {
             //Get Input
             mousePos = context.ReadValue<Vector2>();
+            Debug.Log("Mouse Screen Update: " + mousePos);
 
             //Convert to game pos
             mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+            Debug.Log("Mouse World Update: "+ mousePos);
         }
 
         //Methods

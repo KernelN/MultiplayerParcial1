@@ -153,12 +153,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8cc1f0957aadbb4382e68a6b2432460, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roomManager: {fileID: 0}
   controller: {fileID: 8458014583427101286}
   mainCamera: {fileID: 0}
   projectilePrefab: {fileID: 8861404617529331864, guid: 44c5523b2aae2d843b0715c3ced690e8, type: 3}
   playersEmpty: {fileID: 0}
   mesh: {fileID: 0}
   shootSpawnRadius: 0
+  totalPlayers: 0
+  playerNumber: 0
 --- !u!114 &3458019200221447750
 MonoBehaviour:
   m_ObjectHideFlags: 0

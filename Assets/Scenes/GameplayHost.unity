@@ -1075,6 +1075,7 @@ GameObject:
   - component: {fileID: 1136735043}
   - component: {fileID: 1136735044}
   - component: {fileID: 1136735045}
+  - component: {fileID: 1136735046}
   m_Layer: 0
   m_Name: Gameplay Manager
   m_TagString: Untagged
@@ -1131,9 +1132,30 @@ MonoBehaviour:
   spawnCenter: {fileID: 735706987}
   spawnRadius: {x: 7, y: 3}
   maxPlayers: 0
-  totalPlayers: 0
   playerNumber: 0
   victory: 0
+--- !u!114 &1136735046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136735042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 0
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!114 &1218485797 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3536962502519651890, guid: 9d08e1544308d694c91e1957d8e14417, type: 3}
