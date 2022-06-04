@@ -30,6 +30,7 @@ namespace MultiplayerGame.Photon
         //Event Receivers
         void OnDestroyed()
         {
+            if (!punView.IsMine) return;
             PhotonNetwork.Destroy(punView);
         }
     }

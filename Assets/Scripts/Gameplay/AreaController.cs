@@ -7,7 +7,7 @@ namespace MultiplayerGame.Gameplay
     {
         [Header("Set Values")]
         [SerializeField] LayerMask hittableLayers;
-        [SerializeField] int maxEntities;
+        [SerializeField] public int maxEntities;
         [Header("Runtime Values")]
         [SerializeField] List<Transform> currentEntities;
         [SerializeField] Vector2 leftDownCorner;
@@ -31,6 +31,16 @@ namespace MultiplayerGame.Gameplay
         }
 
         //Methods
+        public void CheckPool()
+        {
+            //If pool maxed, trigger event
+            bool isPoolMaxed = currentEntities.Count >= maxEntities;
+            if (isPoolMaxed != poolMaxed)
+            {
+                poolMaxed = isPoolMaxed;
+                PoolMaxed?.Invoke(poolMaxed);
+            }
+        }
         void UpdateEntityCount()
         {
             //Get all Players
@@ -53,13 +63,7 @@ namespace MultiplayerGame.Gameplay
             currentEntities.AddRange(newEntities);
             PoolChanged?.Invoke(currentEntities.Count);
 
-            //If pool maxed, trigger event
-            bool isPoolMaxed = currentEntities.Count >= maxEntities;
-            if (isPoolMaxed != poolMaxed)
-            {
-                poolMaxed = isPoolMaxed;
-                PoolMaxed?.Invoke(poolMaxed);
-            }
+            CheckPool();
         }
     }
 }

@@ -2,6 +2,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
 using UnityEngine;
+using Universal.SceneManaging;
 
 namespace MultiplayerGame.Photon
 {
@@ -10,10 +11,14 @@ namespace MultiplayerGame.Photon
         [Header("Set Values")]
         [SerializeField] [Range(1, 20)] byte maxPlayersPerRoom = 4;
         [Header("Runtime Values")]
+        public PhotonRoomChecker roomChecker;
+        public Scenes currentScene;
+        public bool disconnected;
         [SerializeField] List<Player> users;
         [SerializeField] int userNumber;
 
         public System.Action RoomJoined;
+        public System.Action<Scenes> SceneChanged;
 
         public List<Player> publicUsers { get { return users; } }
         public int publicUserNumber { get { return userNumber; } }
@@ -39,15 +44,20 @@ namespace MultiplayerGame.Photon
             if (!PhotonNetwork.IsMasterClient) return;
             Debug.Log("Loading Lobby Room");
             PhotonNetwork.LoadLevel("Room");
+            currentScene = Scenes.roomLobby;
+            SceneChanged?.Invoke(Scenes.roomLobby);
         }
         public void LoadLevel()
         {
             if (!PhotonNetwork.IsMasterClient) return;
             Debug.Log("Loading Game");
             PhotonNetwork.LoadLevel("GameplayHost");
+            currentScene = Scenes.roomLobby;
+            SceneChanged?.Invoke(Scenes.gameplay);
         }
 
-        //Photon Events (all this ARE techincally, TCP)
+
+        //Photon Events
         public override void OnJoinRandomFailed(short returnCode, string message)
         {
             Debug.Log(gameObject + " No random room available, create one");
@@ -57,6 +67,9 @@ namespace MultiplayerGame.Photon
         }
         public override void OnJoinedRoom()
         {
+            //Set disconnected to false and update current room
+            disconnected = false;
+
             //Get user number and Set nick if needed
             userNumber = PhotonNetwork.CurrentRoom.PlayerCount;
             if (PhotonNetwork.NickName == "")
@@ -65,7 +78,6 @@ namespace MultiplayerGame.Photon
                 PhotonNetwork.NickName = nick;
                 PhotonNetwork.LocalPlayer.NickName = nick;
             }
-            Debug.Log("Nick " + PhotonNetwork.NickName);
 
             foreach (var player in PhotonNetwork.CurrentRoom.Players)
             {
@@ -73,11 +85,11 @@ namespace MultiplayerGame.Photon
             }
             LoadGameRoom();
             RoomJoined?.Invoke();
-            Debug.Log("Called");
         }
         public override void OnLeftRoom()
         {
             users.Clear();
+            disconnected = true;
             GameManager.Get().LoadScene(Universal.SceneManaging.Scenes.lobby);
         }
         public override void OnPlayerEnteredRoom(Player other)
@@ -95,6 +107,10 @@ namespace MultiplayerGame.Photon
         {
             Debug.Log(other.NickName + " disconnected");
             users.Remove(other);
+            if (currentScene == Scenes.gameplay)
+            {
+                PhotonNetwork.LeaveRoom();
+            }
         }
     }
 }

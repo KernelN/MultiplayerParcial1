@@ -30,11 +30,9 @@ namespace MultiplayerGame.Gameplay.Player
         {
             //Get Input
             mousePos = context.ReadValue<Vector2>();
-            Debug.Log("Mouse Screen Update: " + mousePos);
 
             //Convert to game pos
             mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-            Debug.Log("Mouse World Update: "+ mousePos);
         }
 
         //Methods

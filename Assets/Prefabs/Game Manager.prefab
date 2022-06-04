@@ -73,6 +73,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxPlayersPerRoom: 10
+  roomCheckerPrefab: {fileID: 4640483383264680672, guid: 33a99b07b6db9e047a9f34e49a18c18d, type: 3}
+  roomChecker: {fileID: 0}
+  currentScene: 0
+  disconnected: 0
   userNumber: 0
 --- !u!114 &3040801784977264468
 MonoBehaviour:
