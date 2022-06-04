@@ -93,6 +93,7 @@ namespace MultiplayerGame.Photon
         }
 
         //Event Receivers
+        [PunRPC]
         void OnGameOver(bool victory)
         {
             //Call Event

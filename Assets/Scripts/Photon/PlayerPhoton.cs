@@ -2,6 +2,7 @@ using MultiplayerGame.Gameplay;
 using MultiplayerGame.Gameplay.Player;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering.Universal;
 
 namespace MultiplayerGame.Photon
 {
@@ -14,6 +15,8 @@ namespace MultiplayerGame.Photon
         [SerializeField] GameObject projectilePrefab;
         [SerializeField] Transform playersEmpty;
         [SerializeField] SpriteRenderer mesh;
+        [SerializeField] Light2D light2d;
+        [SerializeField] TrailRenderer trail;
         [SerializeField] float shootSpawnRadius;
         [Header("Runtime Values")]
         [SerializeField] int totalPlayers;
@@ -85,11 +88,15 @@ namespace MultiplayerGame.Photon
             if (playerNumber == totalPlayers)
             {
                 renderer.material.color = Color.black;
+                light2d.color = Color.black;
+                trail.startColor = Color.black;
                 return;
             }
             else if (playerNumber == 1)
             {
                 renderer.material.color = Color.white;
+                light2d.color = Color.white;
+                trail.startColor = Color.white;
                 return;
             }
 
@@ -109,6 +116,8 @@ namespace MultiplayerGame.Photon
 
             //Update Color
             renderer.material.color = newColor;
+            light2d.color = newColor;
+            trail.startColor = newColor;
         }
         void LaunchProjectile(Vector2 mousePos)
         {
